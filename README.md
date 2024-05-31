@@ -9,7 +9,8 @@ A web API that a client uses to do the following:
 ## Prerequisites
 
 1. MS Visual Studio
-2. Run this project [Registration System](https://github.com/bseptember/Registration-system)
+2. Run this open-source project [Registration System](https://github.com/bseptember/Registration-system)
+3. Resource futher reading: [Auth0 endpoints](https://auth0.com/docs/api/authentication?http#introduction) & [Keycloak endpoint tutorial](https://www.baeldung.com/postman-keycloak-endpoints)
 
 
 ## Start
@@ -25,7 +26,7 @@ A web API that a client uses to do the following:
 
 ## Flow Test
 
-WebAPI endpoint = http://your-ip-address:5053/_keycloak/version
+WebAPI endpoint = http://your-ip-address:5053/<_auth0 or _keycloak>/version
 
 1. Webapi generates verifier, uses it to generate code challenge.
 
@@ -44,7 +45,7 @@ WebAPI endpoint = http://your-ip-address:5053/_keycloak/version
 8. The token can also be used to on the webapi to verifier if the user is allowed to retrieve data from the database, but additional checks need to be put in place.
 
 
-## Usage for keycloak
+## Usage
 
 To implement PKCE (needs to be enabled in the identity server) and get redirected to the identity server's log-in page via the web API:
 ```
