@@ -9,13 +9,14 @@ A web API that a client uses to do the following:
 ## Prerequisites
 
 1. MS Visual Studio
+2. Run this project [Registration System](https://github.com/bseptember/Registration-system)
 
 
 ## Start
 
 1. Change the IP address to your local IP Address in the following files: appsettings.json, appsettings.Development.json, launchSettings.json
 
-2. Use the Registration-system project as a quick start to run the required docker containers and use the generated root_ca.crt.
+2. Use the [Registration System](https://github.com/bseptember/Registration-system) project as a quick start to run the required docker containers and use the generated root_ca.crt.
 
 3. Run certmgr.msc on windows run, import the generated root_ca.crt.
 
@@ -24,7 +25,7 @@ A web API that a client uses to do the following:
 
 ## Flow Test
 
-WebAPI endpoint = <your-ip>:5053/_keycloak/version
+WebAPI endpoint = http://your-ip-address:5053/_keycloak/version
 
 1. Webapi generates verifier, uses it to generate code challenge.
 
