@@ -132,7 +132,7 @@ namespace WebAPI.Controllers
                 System.Diagnostics.Debug.Print("----------------access token-----------------------");
                 string encodedToken = tokenParams.access_token;
                 var tokenParts = encodedToken.Split('.');
-                var jwtPayload = Base64UrlDecode(tokenParts[1]);
+                var jwtPayload = Base64UrlDecode(tokenParts[0]);//1 for kc
                 var payloadJson = Encoding.UTF8.GetString(jwtPayload);
                 var payloadDocument = JsonDocument.Parse(payloadJson);
                 foreach (JsonProperty property in payloadDocument.RootElement.EnumerateObject())
@@ -144,7 +144,7 @@ namespace WebAPI.Controllers
 
                 System.Diagnostics.Debug.Print("----------------token-----------------------");
                 string encodedToken1;
-                if (tokenParams.refresh_token.Contains('.'))
+                if (tokenParams.refresh_token.Contains('.') && !tokenParams.refresh_token.Contains("v1"))
                 {
                     encodedToken1 = tokenParams.refresh_token;
                 }
@@ -165,10 +165,10 @@ namespace WebAPI.Controllers
                 }
 
                 /* Extract data directly from token */
-                tokenParams.expires_in = payloadDocument.RootElement.GetProperty("exp").GetInt32();
-                tokenParams.scope = payloadDocument.RootElement.GetProperty("scope").GetString();
-                tokenParams.session_state = payloadDocument.RootElement.GetProperty("sid").GetString();
-                tokenParams.userId = payloadDocument.RootElement.GetProperty("sub").GetString();
+                //tokenParams.expires_in = payloadDocument1.RootElement.GetProperty("exp").GetInt32();
+                //tokenParams.scope = payloadDocument1.RootElement.GetProperty("scope").GetString();
+                tokenParams.session_state = payloadDocument1.RootElement.GetProperty("sid").GetString();
+                tokenParams.userId = payloadDocument1.RootElement.GetProperty("sub").GetString();
                 tokenParams.refresh_expires_in = payloadDocument1.RootElement.GetProperty("exp").GetInt32();
 
                 return tokenParams;

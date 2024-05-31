@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WebAPI.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,8 +19,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
-
-app.UseAuthentication();
 
 app.UseAuthorization();
 

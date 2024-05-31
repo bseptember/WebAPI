@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Net.Http.Headers;
@@ -7,7 +7,7 @@ namespace WebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class Auth0Controller : ControllerBase
+    public class _Auth0Controller : ControllerBase
     {
         private string m_clientId = string.Empty;
         private string m_clientSecret = string.Empty;
@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
         private static readonly string m_verifier = Functions.GenerateCodeVerifier();
         private static readonly string m_challenge = Functions.GenerateCodeChallenge(m_verifier);
 
-        public Auth0Controller(IConfiguration config)
+        public _Auth0Controller(IConfiguration config)
         {
             m_clientId = config["Settings:IdentityServer:OAuth:ClientId_auth0"];
 
@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
                            + "/oidc/logout";
 
             m_logoutApi = config["Settings:WebApi"]
-                        + "/auth0/logout";
+                        + "/_auth0/logout";
 
             m_requestAccessTokenUri = config["Settings:IdentityServer:Address:auth0"]
                             + "/oauth/token";
@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
 
 
             m_redirectUri = config["Settings:WebApi"]
-                            + "/auth0/callback";
+                            + "/_auth0/callback";
 
             m_status = config["Settings:IdentityServer:Address:auth0"]
                             + "/.well-known/jwks.json";
@@ -69,27 +69,27 @@ namespace WebAPI.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return Ok("\nauth0:\n" + content + "\n");
+                    return Ok("\n_auth0:\n" + content + "\n");
                 }
                 else
                 {
-                    return BadRequest("\nauth0:\n" + content + "\n");
+                    return BadRequest("\n_auth0:\n" + content + "\n");
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest("\nauth0:\n" + ex.Message + "\n");
+                return BadRequest("\n_auth0:\n" + ex.Message + "\n");
             }
         }
-        
+
         [HttpGet("version")]
         public IActionResult VersionHandler()
         {
-            System.Diagnostics.Debug.Print("VersionHandler auth0");
+            System.Diagnostics.Debug.Print("VersionHandler _auth0");
 
-            Functions.SetCookie(Response, "endpoint", "/auth0/version");
+            Functions.SetCookie(Response, "endpoint", "/_auth0/version");
 
-            var address = "/auth0/login" +
+            var address = "/_auth0/login" +
                 "?uri=" + m_redirectUri +
                 "&challenge=" + m_challenge;
 
@@ -126,7 +126,7 @@ namespace WebAPI.Controllers
         [HttpGet("login")]
         public async Task<IActionResult> Login(string challenge, string uri)
         {
-            System.Diagnostics.Debug.Print("LoginHandler auth0");
+            System.Diagnostics.Debug.Print("LoginHandler _auth0");
 
             if (!string.IsNullOrWhiteSpace(uri))
             {
@@ -159,7 +159,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        /* In the identity server, ensure you put http://<your-ip>:5053/<auth0/callback */
+        /* In the identity server, ensure you put http://<your-ip>:5053/_auth0/callback */
         /* This function is used to get the access token using the auth code */
         [HttpGet("callback")]
         public async Task<IActionResult> CallbackHandler(string code)
@@ -193,7 +193,7 @@ namespace WebAPI.Controllers
             Functions.SetCookie(Response, "token_content", content);
 
             var endpoint = Functions.GetEndpointCookie(Request);
-            if (null ==endpoint || string.Empty == endpoint)
+            if (null == endpoint || string.Empty == endpoint)
             {
                 return Ok("Endpoint error");
             }
@@ -240,8 +240,8 @@ namespace WebAPI.Controllers
             }
             else
             {
-                Functions.SetCookie(Response, "endpoint", "/auth0/refreshtoken");
-                var address = "/auth0/login" +
+                Functions.SetCookie(Response, "endpoint", "/_auth0/refreshtoken");
+                var address = "/_auth0/login" +
                                 "?uri=" + m_redirectUri +
                                  "&challenge=" + m_challenge;
                 return Redirect(address);
@@ -269,8 +269,8 @@ namespace WebAPI.Controllers
                     }
                     else
                     {
-                        Functions.SetCookie(Response, "endpoint", "/auth0/userinfo");
-                        var address = "/auth0/login" +
+                        Functions.SetCookie(Response, "endpoint", "/_auth0/userinfo");
+                        var address = "/_auth0/login" +
                                       "?uri=" + m_redirectUri +
                                       "&challenge=" + m_challenge;
                         return Redirect(address);
@@ -287,8 +287,8 @@ namespace WebAPI.Controllers
                             if (!response.IsSuccessStatusCode)
                             {
                                 System.Diagnostics.Debug.Print($"Failed to exchange code: {response.StatusCode}");
-                                Functions.SetCookie(Response, "endpoint", "/auth0/userinfo");
-                                var address = "/auth0/login" +
+                                Functions.SetCookie(Response, "endpoint", "/_auth0/userinfo");
+                                var address = "/_auth0/login" +
                                               "?uri=" + m_redirectUri +
                                               "&challenge=" + m_challenge;
                                 return Redirect(address);
@@ -326,7 +326,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Logout()
         {
 
-            System.Diagnostics.Debug.Print("Logout auth0");
+            System.Diagnostics.Debug.Print("Logout _auth0");
 
             var token = Functions.GetTokenCookie(Request);
             if (token != null)
@@ -336,9 +336,11 @@ namespace WebAPI.Controllers
 
                 await client.GetAsync(address);
 
+                await client.GetAsync(address);
+
                 /* Clear after requestUri is set */
                 Functions.ClearCookies(Response);
-
+                
                 var uri = m_logoutApi; /* Do not rename this, must match the var name in RedirectLogout */
                 return RedirectToAction(nameof(RedirectLogout), new { uri });
             }
@@ -347,7 +349,7 @@ namespace WebAPI.Controllers
                 return Ok("Auth0 - Successfully logged out");
             }
         }
-       
+
         [HttpGet("redirect_logout")]
         public IActionResult RedirectLogout(string uri)
         {

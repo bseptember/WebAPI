@@ -162,7 +162,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        /* In the identity server, ensure you put http://<your-ip>:<your-port>/keycloak/callback */
+        /* In the identity server, ensure you put http://<your-ip>:5053/keycloak/callback */
+        /* This function is used to get the access token using the auth code */
         [HttpGet("callback")]
         public async Task<IActionResult> CallbackHandler_kc(string code)
         {
@@ -194,7 +195,7 @@ namespace WebAPI.Controllers
             Functions.SetCookie(Response, "token_content", content);
 
             var endpoint = Functions.GetEndpointCookie(Request);
-            if (endpoint == null)
+            if (null == endpoint || string.Empty == endpoint)
             {
                 return Ok("Endpoint error");
             }
